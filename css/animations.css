@@ -1,0 +1,146 @@
+:root {
+  --rv-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --hover-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --rv-distance: 18px;
+}
+
+@media (max-width: 600px) {
+  :root { --rv-distance: 12px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js [data-rv]:not(.is-visible) {
+    opacity: 0;
+    transform: translate3d(0, var(--rv-distance), 0);
+  }
+
+  [data-rv].rv-anim {
+    animation: rv-up 0.65s var(--rv-ease) calc(var(--rv-i, 0) * 70ms) backwards;
+  }
+
+  [data-rv].rv-anim img {
+    animation: rv-settle 0.7s var(--rv-ease) calc(var(--rv-i, 0) * 70ms) backwards;
+  }
+}
+
+@keyframes rv-up {
+  from { opacity: 0; transform: translate3d(0, var(--rv-distance), 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes rv-settle {
+  from { transform: scale(1.05); }
+  to { transform: scale(1); }
+}
+
+/* Hover interactions  */
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+
+  /* Buttons */
+  .btn {
+    transition: background 0.2s, border-color 0.2s, color 0.2s,
+      transform 0.25s var(--hover-ease), box-shadow 0.25s var(--hover-ease);
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
+  }
+  .btn:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.1s;
+  }
+
+  /* Navigation: underline grows from the left */
+  .site-nav a {
+    background: linear-gradient(var(--orange), var(--orange)) no-repeat 0 100% / 0 2px;
+    transition: color 0.2s, background-size 0.3s var(--hover-ease);
+  }
+  .site-nav a:hover { background-size: 100% 2px; }
+
+  /* Project cards */
+  .project-card {
+    transition: transform 0.35s var(--hover-ease), box-shadow 0.35s var(--hover-ease), border-color 0.35s;
+  }
+  .project-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 121, 0, 0.45);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.42);
+  }
+  .project-card .card-media img {
+    transition: transform 0.6s var(--hover-ease);
+  }
+  .project-card:hover .card-media img { transform: scale(1.04); }
+
+  /* Officers */
+  .officer-card {
+    transition: transform 0.35s var(--hover-ease), box-shadow 0.35s var(--hover-ease);
+  }
+  .officer-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4);
+  }
+  .officer-card .avatar { overflow: hidden; }
+  .officer-card .avatar img { transition: transform 0.6s var(--hover-ease); }
+  .officer-card:hover .avatar img { transform: scale(1.06); }
+
+  /* Members */
+  .member-card {
+    transition: border-color 0.2s, transform 0.3s var(--hover-ease), box-shadow 0.3s var(--hover-ease);
+  }
+  .member-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
+  }
+  .member-card .avatar { overflow: hidden; }
+  .member-card .avatar img { transition: transform 0.5s var(--hover-ease); }
+  .member-card:hover .avatar img { transform: scale(1.06); }
+
+  /* Events */
+  .event {
+    transition: border-color 0.3s, transform 0.35s var(--hover-ease), box-shadow 0.35s var(--hover-ease);
+  }
+  .event:hover {
+    border-color: rgba(255, 121, 0, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.38);
+  }
+  .event .thumb img { transition: transform 0.6s var(--hover-ease); }
+  .event:hover .thumb img { transform: scale(1.04); }
+
+  /* Announcements */
+  .ann-body h3 { transition: color 0.2s; }
+  .ann:hover .ann-body h3 { color: var(--orange); }
+  .ann-icon { transition: transform 0.3s var(--hover-ease); }
+  .ann:hover .ann-icon { transform: translateX(3px); }
+
+  /* Gallery */
+  .gallery-item {
+    transition: border-color 0.3s, transform 0.35s var(--hover-ease), box-shadow 0.35s var(--hover-ease);
+  }
+  .gallery-item:hover {
+    border-color: rgba(255, 121, 0, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.4);
+  }
+  .gallery-item img { transition: transform 0.6s var(--hover-ease); }
+  .gallery-item:hover img { transform: scale(1.06); }
+
+  /* Hero and feature strip */
+  .feature { transition: background 0.3s ease; }
+  .feature:hover { background: rgba(255, 121, 0, 0.04); }
+  .feature .feature-icon { transition: transform 0.35s var(--hover-ease); }
+  .feature:hover .feature-icon { transform: translateY(-3px); }
+
+  /* Organization photos */
+  .about-photo,
+  .batch-photo { overflow: hidden; }
+  .about-photo img,
+  .batch-photo img { transition: transform 0.8s var(--hover-ease); }
+  .about-photo:hover img,
+  .batch-photo:hover img { transform: scale(1.03); }
+
+  /* Contact */
+  .contact-item .feature-icon { transition: transform 0.35s var(--hover-ease); }
+  .contact-item:hover .feature-icon { transform: translateY(-2px); }
+}

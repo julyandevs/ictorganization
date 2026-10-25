@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ICT Organization</title>
+  <meta name="description" content="Information and Communication Technology organization: projects, officers, members, events and announcements." />
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="icon" href="images/ict-logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/project-modal.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/events-calendar.css" />
+  <link rel="stylesheet" href="css/notifications.css" />
+  <script>
+    (function () {
+      var ok = false;
+      try { ok = sessionStorage.getItem('ict-verified') === '1'; } catch (e) {}
+      if (!ok) ok = window.name === 'ict-verified';
+      if (!ok) {
+        document.documentElement.style.visibility = 'hidden';
+        location.replace('loading.html' + (location.hash || ''));
+      }
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="#home" aria-label="ICT Organization home">
+        <img src="images/ict-logo.png" alt="" onerror="this.hidden = true" />
+        <span class="brand-fallback" aria-hidden="true">ICT</span>
+      </a>
+
+      <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="#home" data-route="home">Home</a></li>
+          <li><a href="#about" data-route="about">About Us</a></li>
+          <li><a href="#projects" data-route="projects">Projects</a></li>
+          <li><a href="#officers" data-route="officers">Officers</a></li>
+          <li><a href="#members" data-route="members">Members</a></li>
+          <li><a href="#events" data-route="events">Events</a></li>
+          <li><a href="#gallery" data-route="gallery">Gallery</a></li>
+          <li><a href="#contact" data-route="contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="notif" id="notif">
+        <button class="notif-btn" id="notif-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="notif-panel" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span class="notif-badge" id="notif-badge" hidden></span>
+        </button>
+
+        <div class="notif-panel" id="notif-panel" role="dialog" aria-labelledby="notif-heading" hidden>
+          <div class="notif-head">
+            <h2 class="notif-heading" id="notif-heading">Notifications <span class="notif-count" id="notif-count" hidden></span></h2>
+            <button class="notif-markall" id="notif-markall" type="button">Mark all as read</button>
+          </div>
+          <ul class="notif-list" id="notif-list" hidden></ul>
+          <div class="notif-empty" id="notif-empty" hidden>
+            <span class="notif-empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span>
+            <p>No announcements yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <span class="nav-globe" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9c-2.5-2.6-3.7-5.6-3.7-9S9.5 5.6 12 3z"/></svg>
+      </span>
+
+      <button class="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+
+    <!-- HOME / HERO -->
+    <section class="page hero" id="home" data-page="home" aria-label="Home">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <h1 class="hero-title">Information &amp; Communication Technology <span class="accent">Organization</span></h1>
+            <p class="hero-lead" data-bind="tagline"></p>
+            <div class="hero-actions">
+              <a class="btn" href="#projects">Explore Projects <span aria-hidden="true">&rarr;</span></a>
+              <a class="btn btn-outline" href="#about">Learn More</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-strip">
+          <div class="feature">
+            <span class="feature-icon" data-icon="learn"></span>
+            <div><h3>Learn</h3><p>Enhance your skills in ICT and technology.</p></div>
+          </div>
+          <div class="feature">
+            <span class="feature-icon" data-icon="build"></span>
+            <div><h3>Build</h3><p>Work on real-world projects and systems.</p></div>
+          </div>
+          <div class="feature">
+            <span class="feature-icon" data-icon="connect"></span>
+            <div><h3>Connect</h3><p>Be part of a supportive ICT community.</p></div>
+          </div>
+          <div class="feature">
+            <span class="feature-icon" data-icon="grow"></span>
+            <div><h3>Grow</h3><p>Prepare for a better and brighter future.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="page" id="about" data-page="about" aria-label="About us">
+      <header class="page-head">
+        <div class="container">
+          <h1>About Our Organization</h1>
+          <p class="page-sub" data-bind="about" data-fallback="Information to be added here."></p>
+        </div>
+      </header>
+
+      <div class="section">
+        <div class="container about-grid">
+          <div class="card about-card">
+            <div class="about-row">
+              <span class="feature-icon" data-icon="target"></span>
+              <div><h2>Our Mission</h2><p data-bind="mission" data-fallback="Information to be added here."></p></div>
+            </div>
+            <div class="about-row">
+              <span class="feature-icon" data-icon="eye"></span>
+              <div><h2>Our Vision</h2><p data-bind="vision" data-fallback="Information to be added here."></p></div>
+            </div>
+            <div class="about-row">
+              <span class="feature-icon" data-icon="heart"></span>
+              <div>
+                <h2>Core Values</h2>
+                <ul class="values-list" data-bind-list="values"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="page" id="projects" data-page="projects" aria-label="Projects">
+      <header class="page-head">
+        <div class="container">
+          <h1>Our Projects</h1>
+          <p class="page-sub">Innovation through practice. Solutions for tomorrow.</p>
+        </div>
+      </header>
+      <div class="section">
+        <div class="container">
+          <div class="tabs" id="project-tabs" aria-label="Filter projects by batch"></div>
+          <p class="notice" id="project-empty" hidden></p>
+          <div class="grid" id="project-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OFFICERS -->
+    <section class="page" id="officers" data-page="officers" aria-label="Officers">
+      <header class="page-head">
+        <div class="container">
+          <h1>Our Officers</h1>
+          <p class="page-sub">Leadership today. A stronger ICT tomorrow.</p>
+        </div>
+      </header>
+      <div class="section">
+        <div class="container">
+          <div class="tabs" id="officer-tabs" aria-label="Filter officers by batch"></div>
+          <div id="officer-batches"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEMBERS -->
+    <section class="page" id="members" data-page="members" aria-label="Members directory">
+      <header class="page-head">
+        <div class="container">
+          <h1>Members Directory</h1>
+          <p class="page-sub">Search and connect with our ICT members.</p>
+        </div>
+      </header>
+      <div class="section">
+        <div class="container">
+          <div class="toolbar">
+            <label class="sr-only" for="member-search">Search members</label>
+            <input class="input" id="member-search" type="search" placeholder="Search members" />
+            <label class="sr-only" for="member-batch">Filter by batch</label>
+            <select class="select" id="member-batch">
+              <option value="all">All batches</option>
+              <option>Batch 2025</option>
+              <option>Batch 2026</option>
+              <option>Batch 2027</option>
+            </select>
+            <label class="sr-only" for="member-status">Filter by status</label>
+            <select class="select" id="member-status">
+              <option value="all">All status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="grid member-grid" id="member-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENTS -->
+    <section class="page" id="events" data-page="events" aria-label="Events and activities">
+      <header class="page-head">
+        <div class="container">
+          <h1>Events &amp; Activities</h1>
+          <p class="page-sub">Workshops, seminars, and community events.</p>
+        </div>
+      </header>
+      <div class="section">
+        <div class="container">
+          <div class="event-list" id="event-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <!-- GALLERY comes from content.js > gallery (images/gallery1.png, ...) -->
+    <section class="page" id="gallery" data-page="gallery" aria-label="Photo gallery">
+      <header class="page-head">
+        <div class="container">
+          <h1>Photo Gallery</h1>
+          <p class="page-sub">Moments, memories, and milestones.</p>
+        </div>
+      </header>
+      <div class="section">
+        <div class="container">
+          <div class="tabs" id="gallery-tabs" aria-label="Filter photos by category"></div>
+          <div class="grid gallery-grid" id="gallery-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="page" id="contact" data-page="contact" aria-label="Contact">
+      <header class="page-head">
+        <div class="container">
+          <h1>Get In Touch</h1>
+          <p class="page-sub">Have questions or suggestions? We'd love to hear from you.</p>
+        </div>
+      </header>
+      <div class="section">
+        <div class="container contact-grid">
+          <div class="contact-list">
+            <div class="contact-item">
+              <span class="feature-icon" data-icon="mail"></span>
+              <div><h3>Email</h3><p data-bind="email" data-fallback="Information to be added here."></p></div>
+            </div>
+            <div class="contact-item">
+              <span class="feature-icon" data-icon="pin"></span>
+              <div><h3>Location</h3><p data-bind="location" data-fallback="Information to be added here."></p></div>
+            </div>
+            <div class="contact-item">
+              <span class="feature-icon" data-icon="phone"></span>
+              <div><h3>Phone</h3><p data-bind="phone" data-fallback="Information to be added here."></p></div>
+            </div>
+          </div>
+
+          <form class="card form contact-form" id="contact-form">
+            <div class="field">
+              <label for="c-name">Name</label>
+              <input class="input" id="c-name" name="name" type="text" required autocomplete="name" />
+            </div>
+            <div class="field">
+              <label for="c-email">Email</label>
+              <input class="input" id="c-email" name="email" type="email" required autocomplete="email" />
+            </div>
+            <div class="field">
+              <label for="c-message">Message</label>
+              <textarea class="textarea" id="c-message" name="message" rows="5" required></textarea>
+            </div>
+            <button class="btn btn-block" type="submit">Send Message</button>
+            <p class="hint">Messages are saved in this browser. If an email address is set in the dashboard, your email app also opens with the message.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="#home" aria-label="ICT Organization home">
+          <img src="images/ict-logo.png" alt="" onerror="this.hidden = true" />
+          <span class="brand-fallback" aria-hidden="true">ICT</span>
+        </a>
+        <p class="footer-name" data-bind="orgName"></p>
+      </div>
+
+      <nav class="footer-col" aria-label="Footer quick links">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#officers">Officers</a></li>
+          <li><a href="#members">Members</a></li>
+          <li><a href="#events">Events</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#dashboard">Content dashboard</a></li>
+        </ul>
+      </nav>
+
+      <div class="footer-col">
+        <h3>Follow Us</h3>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/share/1K6PikmGNb/" aria-label="Facebook">f</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p class="copyright">&copy; 2025 ICT Organization. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- MODAL & TOAST -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-box" id="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+      <button class="modal-close" type="button" data-action="close-modal" aria-label="Close">&times;</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+    "use strict";
+
+    // Block common keyboard shortcuts
+    document.addEventListener("keydown", function (event) {
+        const key = event.key.toLowerCase();
+
+        // F12
+        if (key === "f12") {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+
+        // Ctrl + Shift + I / J / C
+        if (
+            event.ctrlKey &&
+            event.shiftKey &&
+            ["i", "j", "c"].includes(key)
+        ) {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+
+        // Ctrl + U (View Source)
+        if (event.ctrlKey && key === "u") {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+
+        // Ctrl + S (Save Page)
+        if (event.ctrlKey && key === "s") {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+    }, true);
+
+    // Disable right-click context menu
+    document.addEventListener("contextmenu", function (event) {
+        event.preventDefault();
+    });
+
+})();
+</script>
+
+  <script src="js/content.js"></script>
+  <script src="js/events-calendar.js" defer></script>
+  <script src="js/project-details.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/project-modal.js"></script>
+  <script src="js/reveal.js"></script>
+</body>
+</html>

@@ -1,0 +1,662 @@
+/* ==========================================================================
+   events-calendar.css: Interactive Events & Activities Calendar
+   Loads after style.css. Reuses the site's tokens (--orange, --surface, --line,
+   --white, --text-soft, --muted) and falls back to sensible values if missing.
+   ========================================================================== */
+
+:root {
+  --ec-orange: var(--orange, #ff7900);
+  --ec-gold: #D4AF37;
+  --ec-surface: var(--surface, #141414);
+  --ec-card: #1b1b1b;
+  --ec-line: var(--line, rgba(255, 255, 255, 0.12));
+  --ec-text: var(--white, #fff);
+  --ec-soft: var(--text-soft, #c8c8c8);
+  --ec-muted: var(--muted, #9a9a9a);
+  --ec-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Stops background scrolling while a modal is open (toggled by JS). */
+html.ec-lock,
+html.ec-lock body { overflow: hidden; }
+
+/* ---------- Overlay and dialog shells ---------- */
+
+.ec-overlay[hidden],
+.ec-overlay [hidden] { display: none !important; }
+
+.ec-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: clamp(0.5rem, 2vw, 1.5rem);
+  background: rgba(5, 5, 5, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.ec-overlay.is-open { opacity: 1; }
+.ec-overlay.is-closing { opacity: 0; }
+.ec-overlay--detail { z-index: 310; }
+
+.ec-dialog {
+  position: relative;
+  width: 100%;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--ec-surface);
+  color: var(--ec-text);
+  border: 1px solid var(--ec-line);
+  border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.ec-dialog--calendar {
+  max-width: 640px;
+  padding: clamp(1rem, 3vw, 1.6rem);
+}
+
+/* Landscape by default: image on the left, event information on the right. */
+.ec-dialog--detail {
+  width: min(90vw, 1000px);
+  max-width: none;
+  padding: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  align-items: start;
+}
+
+/* If an event has no image, the information takes the full width. */
+.ec-dialog--detail:has(> .ec-detail-media[hidden]) > .ec-detail-body {
+  grid-column: 1 / -1;
+}
+
+/* Calendar rises in; event details zoom in; both fade out when closing. */
+.ec-overlay.is-open .ec-dialog--calendar { animation: ec-rise 0.4s var(--ec-ease) both; }
+.ec-overlay.is-open .ec-dialog--detail { animation: ec-zoom 0.45s var(--ec-ease) both; }
+.ec-overlay.is-closing .ec-dialog { animation: ec-zoom-out 0.24s ease-in both; }
+
+@keyframes ec-rise {
+  from { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes ec-zoom {
+  from { opacity: 0; transform: scale(0.82); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes ec-zoom-out {
+  to { opacity: 0; transform: scale(0.94); }
+}
+
+@keyframes ec-fade {
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+.ec-overlay button:focus-visible,
+.ec-overlay a:focus-visible {
+  outline: 2px solid var(--ec-orange);
+  outline-offset: 2px;
+}
+
+/* ---------- Shared buttons ---------- */
+
+.ec-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 40px;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--ec-line);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s var(--ec-ease);
+}
+
+.ec-btn:hover { border-color: var(--ec-orange); color: var(--ec-orange); transform: translateY(-1px); }
+.ec-btn-primary { background: var(--ec-orange); border-color: var(--ec-orange); color: #000; }
+.ec-btn-primary:hover { background: #ff8c1a; border-color: #ff8c1a; color: #000; }
+.ec-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+.ec-icon-btn,
+.ec-close-float {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--ec-line);
+  background: rgba(0, 0, 0, 0.45);
+  color: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.ec-icon-btn:hover,
+.ec-close-float:hover {
+  background: var(--ec-orange);
+  border-color: var(--ec-orange);
+  color: #000;
+}
+
+/* ---------- Calendar modal ---------- */
+
+.ec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ec-title { margin: 0; font-size: 1.35rem; }
+
+.ec-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.ec-month {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.ec-today {
+  height: 36px;
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--ec-line);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.ec-today:hover { border-color: var(--ec-orange); color: var(--ec-orange); }
+
+.ec-weekdays,
+.ec-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.ec-weekdays {
+  margin-bottom: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--ec-muted);
+}
+
+.ec-cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  min-height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s var(--ec-ease);
+}
+
+.ec-cell:hover { border-color: var(--ec-orange); transform: translateY(-1px); }
+.ec-cell.is-blank { background: transparent; border-color: transparent; cursor: default; transform: none; }
+.ec-cell.is-today { box-shadow: inset 0 0 0 1px var(--ec-orange); font-weight: 700; }
+.ec-cell.has-events { background: rgba(255, 121, 0, 0.14); border-color: rgba(255, 121, 0, 0.4); font-weight: 700; }
+.ec-cell.has-many { background: rgba(212, 175, 55, 0.14); border-color: rgba(212, 175, 55, 0.5); }
+.ec-cell.is-selected { background: var(--ec-orange); border-color: var(--ec-orange); color: #000; }
+.ec-cell.has-many.is-selected { background: var(--ec-gold); border-color: var(--ec-gold); }
+
+.ec-dot {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--ec-orange);
+}
+
+.has-many .ec-dot { background: var(--ec-gold); }
+.is-selected .ec-dot { background: #000; }
+
+.ec-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.8rem;
+  color: var(--ec-muted);
+}
+
+.ec-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.ec-legend i { width: 10px; height: 10px; border-radius: 50%; background: var(--ec-orange); display: inline-block; }
+.ec-legend i.is-gold { background: var(--ec-gold); }
+
+.ec-panel {
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ec-line);
+  min-height: 3rem;
+}
+
+.ec-panel-title { margin: 0 0 0.6rem; font-size: 1rem; }
+.ec-hint { margin: 0; color: var(--ec-muted); font-size: 0.92rem; }
+
+.ec-day-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.ec-day-item {
+  width: 100%;
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--ec-line);
+  background: var(--ec-card);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s var(--ec-ease);
+}
+
+.ec-day-item:hover { border-color: var(--ec-orange); transform: translateX(3px); }
+.ec-day-time { flex: none; min-width: 7.5rem; font-size: 0.8rem; font-weight: 700; color: var(--ec-orange); }
+.ec-day-title { font-weight: 600; }
+
+/* ---------- Upcoming section ---------- */
+
+.ec-upcoming {
+  margin: 0 0 2.5rem;
+  min-width: 0;
+}
+
+/* Heading, then the See Events button directly under it, then the cards. */
+.ec-up-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  margin: 0 0 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--ec-line);
+}
+
+.ec-upcoming h3 {
+  margin: 0;
+  font-size: clamp(1.3rem, 2.6vw, 1.6rem);
+  line-height: 1.25;
+}
+
+.ec-see-all {
+  min-height: 42px;
+  padding-inline: 1.25rem;
+}
+
+.ec-up-body { min-width: 0; }
+
+.ec-up-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.ec-up-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.1rem;
+  border-radius: 14px;
+  border: 1px solid var(--ec-line);
+  background: var(--ec-card);
+}
+
+.ec-up-date {
+  display: grid;
+  place-items: center;
+  width: clamp(3.5rem, 9vw, 4rem);
+  aspect-ratio: 8 / 9;
+  flex: none;
+  border-radius: 12px;
+  background: rgba(255, 121, 0, 0.12);
+  border: 1px solid rgba(255, 121, 0, 0.4);
+  color: var(--ec-orange);
+}
+
+.ec-up-mon { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.ec-up-day { font-size: 1.6rem; font-weight: 800; line-height: 1; color: var(--ec-text); }
+.ec-up-title { margin: 0 0 0.25rem; font-size: 1.05rem; }
+.ec-up-meta { margin: 0 0 0.6rem; font-size: 0.85rem; color: var(--ec-soft); }
+
+.ec-units {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ec-units span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  font-size: 0.78rem;
+  color: var(--ec-muted);
+}
+
+.ec-units b { font-size: 1.15rem; color: var(--ec-orange); }
+.ec-live { font-weight: 700; color: var(--ec-orange); }
+
+.ec-up-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 200px;
+}
+
+.ec-up-main { min-width: 0; }
+.ec-up-card .ec-btn { width: 100%; }
+
+/* ---------- Event details modal ---------- */
+
+.ec-detail-media {
+  position: relative;
+  align-self: center;
+  width: calc(100% - 2 * clamp(0.75rem, 1.6vw, 1.1rem));
+  margin: clamp(0.75rem, 1.6vw, 1.1rem);
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  background: #111;
+  overflow: hidden;
+}
+
+.ec-detail-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ec-dialog--detail .ec-close-float {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  z-index: 2;
+  background: rgba(10, 10, 10, 0.6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.ec-detail-body {
+  box-sizing: border-box;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-width: 0;
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+  display: grid;
+  align-content: start;
+  gap: 1.3rem;
+}
+
+.ec-detail-title { padding-right: 2.5rem; overflow-wrap: anywhere; }
+
+.ec-detail-body.is-swap { animation: ec-fade 0.3s ease both; }
+
+.ec-badge {
+  display: inline-block;
+  width: fit-content;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: var(--ec-orange);
+  color: #000;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ec-detail-title {
+  margin: 0.5rem 0 0;
+  font-size: clamp(1.4rem, 3.4vw, 2rem);
+  line-height: 1.2;
+}
+
+.ec-detail-title:focus { outline: none; }
+
+.ec-facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.6rem;
+  margin: 0;
+}
+
+/* Each fact is one line: label on the left, value on the right. */
+.ec-fact {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  min-width: 0;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  background: var(--ec-card);
+  border: 1px solid var(--ec-line);
+}
+
+.ec-fact dt {
+  flex: none;
+  width: 6.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ec-orange);
+}
+
+.ec-fact dd {
+  margin: 0;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--ec-soft);
+}
+
+.ec-detail-desc {
+  margin: 0;
+  white-space: pre-line;
+  line-height: 1.65;
+  color: var(--ec-soft);
+}
+
+.ec-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.6rem;
+}
+
+.ec-gallery img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.ec-detail-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--ec-line);
+}
+
+.ec-detail-foot .ec-btn {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
+.ec-pager {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ec-pager-count {
+  min-width: 4.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ec-muted);
+}
+
+/* ---------- Tablet ---------- */
+
+@media (max-width: 900px) and (min-width: 601px) {
+  .ec-up-card {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+  .ec-up-actions {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+  .ec-up-actions .ec-btn { flex: 1 1 auto; width: auto; }
+}
+
+/* ---------- Mobile ---------- */
+
+/* ---------- Event details: stacked layout (image on top, information below) ---------- */
+
+@media (max-width: 760px) {
+  .ec-dialog--detail {
+    display: block;
+    width: min(94vw, 640px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .ec-detail-media {
+    width: 100%;
+    margin: 0;
+    aspect-ratio: 16 / 9;
+    max-height: min(42vh, 320px);
+    border-radius: 0;
+  }
+
+  .ec-detail-body {
+    max-height: none;
+    overflow: visible;
+  }
+
+  /* Close button stays visible at the top while the modal scrolls. */
+  .ec-dialog--detail > .ec-close-float {
+    position: sticky;
+    top: 0.6rem;
+    float: right;
+    margin: 0.6rem 0.6rem -40px 0;
+    z-index: 3;
+  }
+
+  .ec-detail-title { padding-right: 0; }
+}
+
+@media (max-width: 600px) {
+  .ec-overlay--detail { align-items: end; padding: 0; }
+  .ec-overlay--detail .ec-dialog--detail {
+    width: 100%;
+    max-height: 92vh;
+    max-height: 92dvh;
+    border-radius: 18px 18px 0 0;
+  }
+  .ec-detail-body { padding: 1.1rem 1.1rem 1.4rem; }
+  .ec-detail-foot .ec-btn { flex: 1 1 100%; }
+  .ec-detail-foot .ec-pager { justify-content: space-between; width: 100%; }
+  .ec-up-head { gap: 0.85rem; margin-bottom: 1.25rem; }
+  .ec-see-all { width: 100%; }
+  .ec-up-card { grid-template-columns: auto minmax(0, 1fr); gap: 0.85rem; padding: 0.95rem; }
+  .ec-up-day { font-size: 1.35rem; }
+  .ec-up-actions { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; min-width: 0; }
+  .ec-up-actions .ec-btn { flex: 1 1 auto; width: auto; }
+  .ec-weekdays,
+  .ec-grid { gap: 3px; }
+  .ec-cell { min-height: 0; border-radius: 8px; font-size: 0.85rem; }
+  .ec-day-time { min-width: 0; }
+  .ec-nav .ec-today { padding: 0 0.6rem; }
+}
+
+/* ---------- Very small phones ---------- */
+
+@media (max-width: 480px) {
+  .ec-facts { gap: 0.45rem; }
+  .ec-fact { gap: 0.6rem; padding: 0.6rem 0.75rem; }
+  .ec-fact dt { width: 5.25rem; font-size: 0.62rem; letter-spacing: 0.06em; }
+  .ec-fact dd { font-size: 0.88rem; }
+}
+
+@media (max-width: 420px) {
+  .ec-up-actions .ec-btn { flex: 1 1 100%; }
+  .ec-up-card { padding: 0.85rem; }
+  .ec-detail-title { font-size: 1.3rem; }
+  .ec-pager-count { min-width: 3.5rem; }
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .ec-overlay,
+  .ec-overlay .ec-dialog,
+  .ec-detail-body,
+  .ec-cell,
+  .ec-btn,
+  .ec-day-item {
+    animation: none !important;
+    transition: none !important;
+  }
+}

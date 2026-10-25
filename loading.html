@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0A0A0A" />
+  <title>ICT Organization | Loading</title>
+  <link rel="icon" href="images/logo.png" />
+  <style>
+    :root {
+      --orange: #FF7900;
+      --black: #0A0A0A;
+      --line: #242424;
+      --white: #FFFFFF;
+      --text-soft: #D9D9D9;
+      --muted: #9E9E9E;
+      --surface: #131313;
+      --orange-dark: #E26C00;
+      --red: #EF4444;
+      --green: #22C55E;
+      --radius-sm: 8px;
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --bg-image: url("images/bg.jpg");
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; overflow: hidden; background: var(--black); }
+    body {
+      color: var(--white);
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* Background: site hero photo + faint tech grid under a dark overlay. */
+    .ls-bg {
+      position: fixed; inset: 0;
+      background-color: var(--black);
+      background-image:
+        radial-gradient(ellipse 70% 55% at 50% 100%, rgba(255, 121, 0, 0.16), transparent 70%),
+        radial-gradient(ellipse at center, rgba(10, 10, 10, 0.80) 0%, rgba(10, 10, 10, 0.95) 75%),
+        var(--bg-image);
+      background-size: auto, auto, cover;
+      background-position: center, center, center;
+      background-repeat: no-repeat;
+    }
+    .ls-grid {
+      position: fixed; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+      background-size: 56px 56px;
+      background-position: center;
+      -webkit-mask-image: radial-gradient(ellipse 65% 60% at 50% 50%, #000 20%, transparent 100%);
+              mask-image: radial-gradient(ellipse 65% 60% at 50% 50%, #000 20%, transparent 100%);
+    }
+
+    /* Layout: brand on top, big wordmark in the exact center, status at the bottom. */
+    .ls {
+      position: fixed; inset: 0;
+      display: grid; grid-template-rows: auto 1fr auto;
+      padding: max(1.5rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-right))
+               max(1.5rem, env(safe-area-inset-bottom)) max(1.5rem, env(safe-area-inset-left));
+      animation: ls-fade 300ms ease-out both;
+    }
+    .ls.is-leaving { animation: ls-out 380ms cubic-bezier(0.4, 0, 1, 1) both; }
+
+    /* Corner brackets frame the screen. */
+    .ls-corner { position: fixed; width: 22px; height: 22px; border: 0 solid var(--orange); opacity: 0.85; }
+    .ls-corner.tl { top: max(0.9rem, env(safe-area-inset-top)); left: max(0.9rem, env(safe-area-inset-left)); border-top-width: 2px; border-left-width: 2px; }
+    .ls-corner.tr { top: max(0.9rem, env(safe-area-inset-top)); right: max(0.9rem, env(safe-area-inset-right)); border-top-width: 2px; border-right-width: 2px; }
+    .ls-corner.bl { bottom: max(0.9rem, env(safe-area-inset-bottom)); left: max(0.9rem, env(safe-area-inset-left)); border-bottom-width: 2px; border-left-width: 2px; }
+    .ls-corner.br { bottom: max(0.9rem, env(safe-area-inset-bottom)); right: max(0.9rem, env(safe-area-inset-right)); border-bottom-width: 2px; border-right-width: 2px; }
+
+    /* Top: logo + name, same lockup as the site header. */
+    .ls-brand { display: flex; align-items: center; gap: 0.7rem; padding: 0.4rem 0.6rem; }
+    .ls-core {
+      width: 44px; height: 44px; flex: none;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      background: rgba(255, 121, 0, 0.08);
+      border: 1px solid rgba(255, 121, 0, 0.35);
+      overflow: hidden;
+    }
+    .ls-core img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .ls-core img:not([hidden]) + .ls-fallback { display: none; }
+    .ls-fallback { color: var(--orange); font-weight: 900; font-size: 0.85rem; letter-spacing: 0.04em; }
+    .ls-brand-name { font-weight: 800; font-size: 0.95rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    .ls-brand-name span { color: var(--orange); }
+
+    /* Center: giant outlined ICT that fills with orange as the site loads. */
+    .ls-stage { display: grid; place-items: center; align-content: center; text-align: center; min-height: 0; }
+    .ls-word {
+      --p: 0%;
+      margin: 0;
+      font-size: clamp(5rem, min(27vw, 38vh), 16rem);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      padding: 0 0.04em 0.06em 0;
+      color: transparent;
+      -webkit-text-stroke: 2px rgba(255, 121, 0, 0.55);
+      background-image: linear-gradient(to top, var(--orange) 0, var(--orange) var(--p), transparent var(--p));
+      -webkit-background-clip: text; background-clip: text;
+      filter: drop-shadow(0 0 28px rgba(255, 121, 0, 0.22));
+      user-select: none;
+    }
+    .ls-sub {
+      margin: 0.9rem 0 0;
+      font-size: clamp(0.72rem, 2.2vw, 0.95rem);
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      text-wrap: balance;
+    }
+    .ls-sub b { color: var(--orange); font-weight: 800; }
+
+    /* Bottom: status on the left, big percentage on the right, bar across the full width. */
+    .ls-foot { display: grid; gap: 0.9rem; padding: 0 0.6rem 0.4rem; }
+    .ls-meta { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+    .ls-status { margin: 0; color: var(--muted); font-size: 0.92rem; min-height: 1.5em; }
+    .ls-status::after {
+      content: ""; display: inline-block; width: 0.5em; height: 1em; margin-left: 0.35em;
+      vertical-align: -0.12em; background: var(--orange);
+      animation: ls-blink 1s steps(1) infinite;
+    }
+    .ls-pct {
+      font-size: clamp(2.4rem, 8vw, 4rem);
+      font-weight: 900; line-height: 1; letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+    }
+    .ls-pct small { font-size: 0.45em; font-weight: 800; color: var(--orange); margin-left: 0.1em; letter-spacing: 0; }
+    .ls-track { height: 4px; background: var(--line); border-radius: 999px; overflow: hidden; }
+    .ls-fill {
+      height: 100%; width: 0; background: var(--orange); border-radius: inherit;
+      box-shadow: 0 0 14px rgba(255, 121, 0, 0.7);
+    }
+
+    /* While the verification modal is open, the loader steps back behind it. */
+    .ls-brand, .ls-stage, .ls-foot { transition: opacity 400ms ease, filter 400ms ease, transform 400ms ease; }
+    .ls.is-verifying .ls-foot { opacity: 0; transform: translateY(8px); pointer-events: none; }
+    .ls.is-verifying .ls-stage { opacity: 0.16; filter: blur(3px); }
+    .ls.is-verifying .ls-status::after { animation: none; }
+
+    /*  Surname verification modal */
+    .vm {
+      position: fixed; inset: 0; z-index: 20;
+      display: flex; padding: 1rem;
+      background: rgba(10, 10, 10, 0.55);
+      -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+      overflow-y: auto;
+      animation: ls-fade 320ms ease-out both;
+    }
+    .vm[hidden] { display: none; }
+    .vm.is-leaving { animation: ls-out 380ms cubic-bezier(0.4, 0, 1, 1) both; }
+    .vm-card {
+      position: relative; margin: auto;
+      width: min(100%, 460px);
+      padding: clamp(2rem, 5vw, 2.6rem) clamp(1.3rem, 4vw, 2.2rem) clamp(1.6rem, 4vw, 2rem);
+      text-align: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--orange);
+      border-radius: 16px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+      animation: vm-rise 480ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+      transition: border-top-color 250ms ease;
+    }
+    .vm-card.is-success { border-top-color: var(--green); }
+    .vm-mark {
+      width: 64px; height: 64px; margin: 0 auto 1.4rem;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      background: rgba(255, 121, 0, 0.08);
+      border: 1px solid rgba(255, 121, 0, 0.35);
+      overflow: hidden;
+    }
+    .vm-mark img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .vm-mark img:not([hidden]) + .vm-mark-fallback { display: none; }
+    .vm-mark-fallback { color: var(--orange); font-weight: 900; font-size: 1.1rem; letter-spacing: 0.04em; }
+    .vm-title {
+      font-size: clamp(1.35rem, 3.8vw, 1.6rem); font-weight: 800;
+      line-height: 1.25; letter-spacing: -0.01em; margin: 0 0 0.9rem; text-wrap: balance;
+    }
+    .vm-title .accent { color: var(--orange); }
+    .vm-message {
+      color: var(--text-soft); font-size: 0.98rem; line-height: 1.6;
+      max-width: 34ch; margin: 0 auto 1.6rem; text-wrap: balance;
+    }
+    .vm-form { margin: 0; text-align: left; }
+    .vm-label { display: block; margin-bottom: 0.45rem; color: var(--text-soft); font-size: 0.85rem; font-weight: 600; }
+    .vm-input {
+      display: block; width: 100%; min-height: 48px; padding: 0.75rem 0.95rem;
+      font: inherit; font-size: 1rem; color: var(--white);
+      background: #0c0c0c; border: 1px solid #3a3a3a; border-radius: var(--radius-sm);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .vm-input:focus, .vm-input:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-color: var(--orange); }
+    .vm-input.is-invalid { border-color: var(--red); }
+    .vm-input.is-invalid:focus { outline-color: var(--red); }
+    .vm-input:read-only { opacity: 0.75; }
+    .vm-help { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.82rem; }
+    .vm-error { margin: 0.6rem 0 0; color: var(--red); font-size: 0.88rem; line-height: 1.45; }
+    .vm-error[hidden] { display: none; }
+    .vm-error.is-shake { animation: vm-shake 360ms ease; }
+    .vm-submit {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      width: 100%; min-height: 50px; margin-top: 1.1rem; padding: 0.7rem 1.4rem;
+      font: inherit; font-size: 1rem; font-weight: 700; color: #000;
+      background: var(--orange); border: 2px solid var(--orange); border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .vm-submit:hover:not(:disabled) { background: var(--orange-dark); border-color: var(--orange-dark); box-shadow: 0 8px 22px rgba(255, 121, 0, 0.25); }
+    .vm-submit:active:not(:disabled) { transform: translateY(1px) scale(0.99); box-shadow: none; }
+    .vm-submit:focus-visible { outline: 2px solid var(--white); outline-offset: 3px; }
+    .vm-submit:disabled { cursor: default; opacity: 0.8; }
+    .vm-submit.is-loading { cursor: progress; }
+    .vm-submit.is-success { background: var(--green); border-color: var(--green); }
+    .vm-spinner {
+      display: none; width: 16px; height: 16px;
+      border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%;
+      animation: vm-spin 0.8s linear infinite;
+    }
+    .vm-submit.is-loading .vm-spinner, .vm-submit.is-success .vm-spinner { display: inline-block; }
+    .vm-hint { margin: 1rem 0 0; color: var(--muted); font-size: 0.85rem; line-height: 1.5; text-wrap: balance; }
+
+    @keyframes vm-rise  { from { opacity: 0; transform: translateY(16px) scale(0.985); } to { opacity: 1; transform: none; } }
+    @keyframes vm-spin  { to { transform: rotate(360deg); } }
+    @keyframes vm-shake { 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+
+    @keyframes ls-fade  { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes ls-out   { to { opacity: 0; transform: scale(1.03); } }
+    @keyframes ls-blink { 50% { opacity: 0; } }
+
+    @media (max-width: 480px) {
+      .ls-brand-name { font-size: 0.82rem; }
+      .ls-word { font-size: min(42vw, 34vh); -webkit-text-stroke-width: 1.5px; }
+      .ls-sub { letter-spacing: 0.12em; max-width: 24ch; }
+    }
+    @media (max-height: 420px) {
+      .ls-sub { margin-top: 0.4rem; }
+      .ls-pct { font-size: 1.8rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ls, .ls.is-leaving { animation: none; }
+      .ls.is-leaving { opacity: 0; }
+      .ls-status::after { animation: none; }
+      .vm, .vm.is-leaving, .vm-card, .vm-error.is-shake { animation: none; }
+      .vm.is-leaving { opacity: 0; }
+      .vm-spinner { animation-duration: 2s; }
+      .ls-brand, .ls-stage, .ls-foot, .vm-card { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ls-bg" aria-hidden="true"></div>
+  <div class="ls-grid" aria-hidden="true"></div>
+  <span class="ls-corner tl" aria-hidden="true"></span>
+  <span class="ls-corner tr" aria-hidden="true"></span>
+  <span class="ls-corner bl" aria-hidden="true"></span>
+  <span class="ls-corner br" aria-hidden="true"></span>
+
+  <noscript><style>.ls, .ls-corner { display: none; }</style>
+    <p style="position:fixed;inset:0;display:grid;place-items:center;margin:0;padding:1.5rem;text-align:center;color:#fff;font-family:system-ui,sans-serif;">Please enable JavaScript to open the ICT Organization website.</p>
+  </noscript>
+
+  <main class="ls" id="ls">
+    <header class="ls-brand">
+      <div class="ls-core" aria-hidden="true">
+        <img src="images/ict-logo.png" alt="" onerror="this.hidden = true" />
+        <span class="ls-fallback">ICT</span>
+      </div>
+      <span class="ls-brand-name">ICT <span>Organization</span></span>
+    </header>
+
+    <section class="ls-stage">
+      <h1 class="ls-word" id="ls-word" aria-label="ICT Organization">ICT</h1>
+      <p class="ls-sub" aria-hidden="true">Information &amp; Communication <b>Technology</b></p>
+    </section>
+
+    <footer class="ls-foot">
+      <div class="ls-meta">
+        <p class="ls-status" id="ls-status" role="status" aria-live="polite">Loading content</p>
+        <div class="ls-pct" aria-hidden="true"><span id="ls-num">0</span><small>%</small></div>
+      </div>
+      <div class="ls-track" id="ls-track" role="progressbar" aria-label="Loading website" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="ls-fill" id="ls-fill"></div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Surname verification. Hidden until the loading screen has finished. -->
+  <div class="vm" id="vm" hidden>
+    <section class="vm-card" id="vm-card" role="dialog" aria-modal="true" aria-labelledby="vm-title" aria-describedby="vm-desc">
+      <div class="vm-mark" aria-hidden="true">
+        <img src="images/ict-logo.png" alt="" onerror="this.hidden = true" />
+        <span class="vm-mark-fallback">ICT</span>
+      </div>
+      <h2 class="vm-title" id="vm-title">ICT Member <span class="accent">Verification</span></h2>
+      <p class="vm-message" id="vm-desc">Enter the surname you registered with to continue.</p>
+
+      <form class="vm-form" id="vm-form" novalidate>
+        <label class="vm-label" for="vm-surname">Registered surname</label>
+        <input class="vm-input" id="vm-surname" name="surname" type="text" autocomplete="family-name" autocapitalize="words" spellcheck="false" maxlength="80" aria-describedby="vm-help vm-error" aria-invalid="false" />
+        <p class="vm-help" id="vm-help">Use the same spelling as your membership record.</p>
+        <p class="vm-error" id="vm-error" role="alert" hidden></p>
+        <button class="vm-submit" type="submit" id="vm-submit"><span class="vm-btn-label">Verify Identity</span><span class="vm-spinner" aria-hidden="true"></span></button>
+      </form>
+
+      <p class="vm-hint">Access is limited to registered ICT members.</p>
+    </section>
+  </div>
+
+  <script src="js/content.js"></script>
+  <script src="js/verify.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    var DESTINATION = 'index.html' + (location.hash || '');
+    var MIN_MS = 2500;
+    var MAX_MS = 6000;
+    var HOLD_MS = 350;
+    var SUCCESS_MS = 600;
+    var EXIT_MS = 380;
+    var MAX_ATTEMPTS = 5;
+    var LOCKOUT_MS = 30000;
+
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function isVerified() {
+      try { if (sessionStorage.getItem('ict-verified') === '1') return true; } catch (e) {}
+      return window.name === 'ict-verified';
+    }
+    function markVerified() {
+      try { sessionStorage.setItem('ict-verified', '1'); } catch (e) {}
+      window.name = 'ict-verified';
+    }
+    if (isVerified()) { location.replace(DESTINATION); return; }
+
+    var ASSETS = [
+      { type: 'img',   url: 'images/ict-logo.png' },
+      { type: 'img',   url: 'images/bg.jpg' },
+      { type: 'fetch', url: 'style.css' },
+      { type: 'fetch', url: 'content.js' },
+      { type: 'fetch', url: 'script.js' }
+    ];
+
+    var root = document.getElementById('ls');
+    var fill = document.getElementById('ls-fill');
+    var track = document.getElementById('ls-track');
+    var statusEl = document.getElementById('ls-status');
+    var numEl = document.getElementById('ls-num');
+    var wordEl = document.getElementById('ls-word');
+
+    var modal = document.getElementById('vm');
+    var card = document.getElementById('vm-card');
+    var form = document.getElementById('vm-form');
+    var input = document.getElementById('vm-surname');
+    var errorBox = document.getElementById('vm-error');
+    var submitBtn = document.getElementById('vm-submit');
+    var submitLabel = submitBtn.querySelector('.vm-btn-label');
+
+    var done = 0;
+    var shown = 0;
+    var loadingFinished = false;
+    var started = performance.now();
+
+    function setBar(value) {
+      var v = Math.max(0, Math.min(100, value));
+      fill.style.width = v + '%';
+      wordEl.style.setProperty('--p', v + '%');
+      numEl.textContent = String(Math.round(v));
+      track.setAttribute('aria-valuenow', String(Math.round(v)));
+      var msg = v >= 100 ? 'Ready' : v >= 70 ? 'Starting website' : v >= 35 ? 'Loading images' : 'Loading content';
+      if (statusEl.textContent !== msg) statusEl.textContent = msg;
+    }
+
+    function loadOne(asset) {
+      return new Promise(function (resolve) {
+        if (asset.type === 'img') {
+          var img = new Image();
+          img.onload = img.onerror = function () { resolve(); };
+          img.src = asset.url;
+        } else {
+          try {
+            fetch(asset.url).then(function () { resolve(); }, function () { resolve(); });
+          } catch (e) { resolve(); }
+        }
+      }).then(function () { done += 1; });
+    }
+    ASSETS.forEach(loadOne);
+
+    var ticker = setInterval(function () {
+      if (loadingFinished) return;
+      var elapsed = performance.now() - started;
+      var target = Math.min((done / ASSETS.length) * 100, (elapsed / MIN_MS) * 100);
+      if (elapsed >= MAX_MS) target = 100;
+      target = Math.max(8, Math.min(100, target));
+      shown += (target - shown) * (reduceMotion ? 1 : 0.18);
+      if (target >= 100 && shown >= 99.5) return finishLoading();
+      setBar(Math.min(shown, 99));
+    }, 40);
+
+    /* Loading is complete: fill the bar, hold briefly, THEN open the verification modal. */
+    function finishLoading() {
+      if (loadingFinished) return;
+      loadingFinished = true;
+      clearInterval(ticker);
+      setBar(100);
+      setTimeout(openModal, reduceMotion ? 0 : HOLD_MS);
+    }
+
+    /* Verification */
+
+    var step = 'loading';   // loading -> verify -> success -> leaving
+    var busy = false;
+    var failures = 0;
+    var lockedUntil = 0;
+
+    function openModal() {
+      if (step !== 'loading') return;
+      step = 'verify';
+      root.classList.add('is-verifying');
+      root.inert = true;
+      modal.hidden = false;
+      input.focus({ preventScroll: true });
+    }
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.hidden = !message;
+      input.setAttribute('aria-invalid', String(Boolean(message)));
+      input.classList.toggle('is-invalid', Boolean(message));
+      errorBox.classList.remove('is-shake');
+      if (message && !reduceMotion) { void errorBox.offsetWidth; errorBox.classList.add('is-shake'); }
+    }
+
+    function setBusy(on) {
+      busy = on;
+      input.readOnly = on;
+      submitBtn.disabled = on;
+      submitBtn.classList.toggle('is-loading', on);
+      submitLabel.textContent = on ? 'Verifying\u2026' : 'Verify Identity';
+      form.setAttribute('aria-busy', String(on));
+    }
+
+    function showLockMessage() {
+      var seconds = Math.ceil((lockedUntil - Date.now()) / 1000);
+      showError('Too many attempts. Please wait ' + seconds + ' seconds and try again.');
+    }
+
+    /* Correct surname */
+    function succeed() {
+      step = 'success';
+      markVerified();
+      showError('');
+      input.readOnly = true;
+      card.classList.add('is-success');
+      submitBtn.disabled = true;
+      submitBtn.classList.add('is-success');
+      submitLabel.textContent = 'Verified \u2013 opening site';
+      setTimeout(function () {
+        step = 'leaving';
+        if (!reduceMotion) modal.classList.add('is-leaving');
+        setTimeout(function () { location.replace(DESTINATION); }, reduceMotion ? 0 : EXIT_MS);
+      }, reduceMotion ? 250 : SUCCESS_MS);
+    }
+
+    function handleVerify(e) {
+      e.preventDefault();
+      if (busy || step !== 'verify') return;
+      if (Date.now() < lockedUntil) return showLockMessage();
+
+      if (!window.ICTVerify) {
+        showError('Verification is unavailable right now. Please refresh the page and try again.');
+        return;
+      }
+
+      var check = window.ICTVerify.validate(input.value);
+      if (check.error) { showError(check.error); input.focus(); return; }
+
+      showError('');
+      setBusy(true);
+      window.ICTVerify.check(check.value).then(function (result) {
+        setBusy(false);
+        if (result.status === 'verified') { failures = 0; succeed(); return; }
+
+        if (result.status === 'inactive') {
+          showError('This membership is inactive. Please contact your ICT adviser.');
+        } else {
+          failures += 1;
+          if (failures >= MAX_ATTEMPTS) {
+            failures = 0;
+            lockedUntil = Date.now() + LOCKOUT_MS;
+            showLockMessage();
+          } else {
+            showError("We couldn't find that surname in the member records. Check the spelling and try again.");
+          }
+        }
+        input.focus();
+        input.select();
+      }, function (err) {
+        console.error('Verification failed:', err);
+        setBusy(false);
+        showError('We could not verify you right now. Please try again in a moment.');
+      });
+    }
+
+    form.addEventListener('submit', handleVerify);
+    input.addEventListener('input', function () { if (!errorBox.hidden && !busy) showError(''); });
+
+    /* Keep Tab inside the modal while it is open. */
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab' || modal.hidden) return;
+      var items = [input, submitBtn].filter(function (el) { return !el.disabled; });
+      if (!items.length) { e.preventDefault(); return; }
+      var i = items.indexOf(document.activeElement);
+      var next = e.shiftKey ? (i <= 0 ? items.length - 1 : i - 1) : (i === -1 || i === items.length - 1 ? 0 : i + 1);
+      e.preventDefault();
+      items[next].focus();
+    });
+  })();
+  </script>
+</body>
+</html>
